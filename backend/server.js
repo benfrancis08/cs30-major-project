@@ -11,7 +11,11 @@ const STOCKS = ['AAPL', 'NVDA', 'AMZN', 'MSFT', 'GOOG'];
 
 let stockPrice = [];
 
-app.use(cors());
+// Allows communictation between frontend and backend without errors
+// http://127.0.0.1:5500 only used for local testing REMOVE BEFORE HANDING IN
+app.use(cors({
+    origin: ['https://benfrancis08.github.io', 'http://127.0.0.1:5500']
+}));
 
 // API Stock Calling - Uses Finnhub (60 api calls per min)
 async function updatePrices() {
@@ -19,12 +23,19 @@ async function updatePrices() {
     for (let stock of STOCKS) {
         let response = await axios.get(`https://finnhub.io/api/v1/quote?symbol=${stock}&token=${process.env.FINNHUB_KEY}`);
         tempPrice.push({
-            Stock: stock,
-            Price: response.data.c,
+            stock: stock,
+            price: response.data.c,
         })
         stockPrice = tempPrice;
     }
 }
+
+async function autoUpdatePrice() {
+    stockPrice = [];
+    await updatePrices();
+    setTimeout(autoUpdatePrice, 10000);
+}
+
 
 // Code by gemini to create webserver accessible at localhost:3000 to make sure api calling works
 
