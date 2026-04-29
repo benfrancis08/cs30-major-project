@@ -9,7 +9,7 @@ const cors = require('cors');
 const app = express();
 const STOCKS = ['AAPL', 'NVDA', 'AMZN', 'MSFT', 'GOOG'];
 
-let stockPrice = [];
+let stockPrices = [];
 
 // Allows communictation between frontend and backend without errors
 // http://127.0.0.1:5500 only used for local testing REMOVE BEFORE HANDING IN
@@ -26,7 +26,7 @@ async function updatePrices() {
             stock: stock,
             price: response.data.c,
         })
-        stockPrice = tempPrice;
+        stockPrices = tempPrice;
     }
 }
 
@@ -36,7 +36,19 @@ async function autoUpdatePrice() {
     setTimeout(autoUpdatePrice, 10000);
 }
 
-
+app.get('/prices/:symbol' (req, res) => {
+    let symbol = req.params.symbol.toUpperCase();
+    for (let stockSymbol of STOCKS) {
+        if (symbol === stockSymbol) {
+            for (let stock of stockPrices) {
+                if (stock.stock === symbol) {
+                    return res.json(stock);
+                }
+            }
+        }
+    }
+});
+    
 // Code by gemini to create webserver accessible at localhost:3000 to make sure api calling works
 
 // 2. Create an endpoint to see the data
