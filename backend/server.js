@@ -14,7 +14,7 @@ let stockPrices = [];
 // Allows communictation between frontend and backend without errors
 // http://127.0.0.1:5500 only used for local testing REMOVE BEFORE HANDING IN
 app.use(cors({
-    origin: ['https://benfrancis08.github.io', 'http://127.0.0.1:5500']
+    origin: ['https://benfrancis08.github.io', 'http://127.0.0.1:5500', 'http://localhost:3000']
 }));
 
 // API Stock Calling - Uses Finnhub (60 api calls per min)
@@ -31,21 +31,18 @@ async function updatePrices() {
 }
 
 async function autoUpdatePrice() {
-    stockPrice = [];
     await updatePrices();
     setTimeout(autoUpdatePrice, 10000);
 }
 
-app.get('/prices/:symbol' (req, res) => {
+app.get('/prices/:symbol', (req, res) => {
     let symbol = req.params.symbol.toUpperCase();
-    for (let stockSymbol of STOCKS) {
-        if (symbol === stockSymbol) {
-            for (let stock of stockPrices) {
-                if (stock.stock === symbol) {
-                    return res.json(stock);
-                }
-            }
-        }
+    let stock = stockPrices.find(s => s.stock === symbol);
+    if (stock === undefined) {
+        res.json(`Stock not found. Please choose from this list: ${STOCKS}`);
+    }
+    else {
+        res.json(stock);
     }
 });
     
@@ -53,11 +50,11 @@ app.get('/prices/:symbol' (req, res) => {
 
 // 2. Create an endpoint to see the data
 app.get('/prices', (req, res) => {
-    res.json(stockPrice);
+    res.json(stockPrices);
 });
 
 // Run the fetcher and start server
 app.listen(process.env.PORT, async () => {
-    await updatePrices(); // Initial fetch on startup
+    await autoUpdatePrice(); // Initial fetch on startup
     console.log(`Server running on http://localhost:${process.env.PORT}`);
 });
