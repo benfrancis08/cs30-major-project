@@ -30,11 +30,18 @@ async function updatePrices() {
     }
 }
 
+// Function to automatically fetch the stock price every 10 seconds
 async function autoUpdatePrice() {
     await updatePrices();
     setTimeout(autoUpdatePrice, 10000);
 }
 
+// '/prices' endpoint displays all stocks and its price
+app.get('/prices', (req, res) => {
+    res.json(stockPrices);
+})
+
+// '/prices/:symbol' endpoint displays only requested stock (Ex. '/prices/aapl' will give only the price for apple)
 app.get('/prices/:symbol', (req, res) => {
     let symbol = req.params.symbol.toUpperCase();
     let stock = stockPrices.find(s => s.stock === symbol);
@@ -45,16 +52,9 @@ app.get('/prices/:symbol', (req, res) => {
         res.json(stock);
     }
 });
-    
-// Code by gemini to create webserver accessible at localhost:3000 to make sure api calling works
 
-// 2. Create an endpoint to see the data
-app.get('/prices', (req, res) => {
-    res.json(stockPrices);
-});
-
-// Run the fetcher and start server
+// Creates a server that listens for above endpoints and starts the autoUpdatePrice loop function
 app.listen(process.env.PORT, async () => {
-    await autoUpdatePrice(); // Initial fetch on startup
-    console.log(`Server running on http://localhost:${process.env.PORT}`);
-});
+    await autoUpdatePrice();
+    console.log(`Started\nRunning on http://localhost:${process.env.PORT}`);
+})
