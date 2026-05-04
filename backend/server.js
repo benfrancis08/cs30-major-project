@@ -14,7 +14,7 @@ let stockPrices = [];
 // Allows communictation between frontend and backend without errors
 // http://127.0.0.1:5500 only used for local testing REMOVE BEFORE HANDING IN
 app.use(cors({
-    origin: ['https://benfrancis08.github.io', 'http://127.0.0.1:5500', 'http://localhost:3000']
+    origin: ['https://benfrancis08.github.io', 'http://127.0.0.1:5500']
 }));
 
 // API Stock Calling - Uses Finnhub (60 api calls per min)
