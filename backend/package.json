@@ -11,7 +11,8 @@
   "description": "Backend will handle all logic including data storing/fetching and anything else non graphical",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "install": "npm install",
+    "run": "node server.js"
   },
   "keywords": [],
   "author": "",

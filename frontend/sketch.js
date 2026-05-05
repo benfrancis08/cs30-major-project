@@ -7,11 +7,12 @@
 
 let stockPrices;
 let currentTime;
-let price;
+let price = 0;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   currentTime = millis();
+  textAlign(CENTER);
 }
 
 function draw() {
@@ -19,16 +20,20 @@ function draw() {
   if (millis() > currentTime + 5000) {
     currentTime = millis();
     getPrice();
-    console.log(price);
+    if (price !== undefined) {
+      console.log(price);
+      console.log(price[0].price);
+    }
   }
-  textAlign(CENTER);
-  if (price !== undefined) {
-    console.log(price[0].price);
-    // text(width/2, height/2, price[0].price);
-  }
+  text(price[0].price, width/2, height/2);
 }
 
 async function getPrice() {
-  stockPrices = await fetch('http://localhost:3000/prices');
-  price = await stockPrices.json();
+  try {
+    stockPrices = await fetch('http://localhost:3000/prices');
+    price = await stockPrices.json();
+  }
+  catch(error) {
+    console.log("something went wrong " + error);
+  }
 } 
