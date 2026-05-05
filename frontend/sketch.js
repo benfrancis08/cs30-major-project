@@ -23,7 +23,8 @@ function draw() {
   }
   textAlign(CENTER);
   if (price !== undefined) {
-    text(width/2, height/2, price[0].price);
+    console.log(price[0].price);
+    // text(width/2, height/2, price[0].price);
   }
 }
 
