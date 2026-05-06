@@ -1,5 +1,5 @@
-// Project Title
-// Your Name
+// CS30 Paper Trader
+// Ben Francis
 // Date
 //
 // Extra for Experts:
@@ -7,25 +7,24 @@
 
 let stockPrices;
 let currentTime;
-let price = 0;
+let price = undefined;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   currentTime = millis();
+  getPrice();
   textAlign(CENTER);
 }
 
 function draw() {
   background(220);
-  if (millis() > currentTime + 5000) {
+  if (millis() > currentTime + 10000) {
     currentTime = millis();
     getPrice();
-    if (price !== undefined) {
-      console.log(price);
-      console.log(price[0].price);
-    }
   }
-  text(price[0].price, width/2, height/2);
+  if (price !== undefined) {
+    text(price[2].price, width/2, height/2);
+  }
 }
 
 async function getPrice() {
