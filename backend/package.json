@@ -11,8 +11,8 @@
   "description": "Backend will handle all logic including data storing/fetching and anything else non graphical",
   "main": "server.js",
   "scripts": {
-    "install": "npm install",
-    "run": "node server.js"
+    "setup": "npm install",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
