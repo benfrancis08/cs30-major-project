@@ -7,6 +7,9 @@
 
 let currentTime;
 let price;
+let buttons;
+let clicked = undefined;
+
 let stocks = new Map();
 
 async function setup() {
@@ -14,7 +17,17 @@ async function setup() {
   currentTime = millis();
   await getStocks();
   setupStocks();
-  textAlign(CENTER);
+
+  buttons = [
+    {x: width/2, y: height*1/6, w: width/6, h: height/15},
+    {x: width/2, y: height*1/3, w: width/6, h: height/15},
+    {x: width/2, y: height*1/2, w: width/6, h: height/15},
+    {x: width/2, y: height*2/3, w: width/6, h: height/15},
+    {x: width/2, y: height*5/6, w: width/6, h: height/15}
+  ];
+  
+  textAlign(CENTER, CENTER);
+  rectMode(CENTER);
 }
 
 function draw() {
@@ -29,7 +42,13 @@ function draw() {
   //   text(price[2].price, width/2, height/2);
   // }
 
-  createButtons();
+  if (clicked !== undefined) {
+    let tempPrice = stocks.get(clicked);
+    text(`${clicked}\n${tempPrice.price}`, width/2, height/2);
+  }
+  else {
+    createButtons();
+  }
 }
 
 async function getStocks() {
@@ -50,16 +69,38 @@ function setupStocks() {
 }
 
 function createButtons() {
-
+  let index = 0;
   for (let [key, value] of stocks) {
-    
-  }
+    if (mouseIsInButton(buttons[index])) {
+      buttons[index].w = width/6 + 25;
+      buttons[index].h = height/15 + 25;
+    }
+    else {
+      buttons[index].w = width/6;
+      buttons[index].h = height/15;
+    }
 
-  rectMode(CENTER);
-  fill(255);
-  rect(width/2, height*(1/6), width/6, height/15);
-  rect(width/2, height*(1/3), width/6, height/15);
-  rect(width/2, height*(1/2), width/6, height/15);
-  rect(width/2, height*(2/3), width/6, height/15);
-  rect(width/2, height*(5/6), width/6, height/15);
+    fill(255);
+    rect(buttons[index].x, buttons[index].y, buttons[index].w, buttons[index].h);
+    fill(0);
+    text(value.name, buttons[index].x, buttons[index].y);
+
+    buttons[index].i = key;
+    index ++;
+  }
+}
+
+function mouseIsInButton(btn) {
+  return mouseX > btn.x - btn.w/2 &&
+         mouseX < btn.x + btn.w/2 &&
+         mouseY > btn.y - btn.h/2 &&
+         mouseY < btn.y + btn.h/2;
+}
+
+function mouseReleased() {
+  for (let button of buttons) {
+    if (mouseIsInButton(button)) {
+      clicked = button.i;
+    }
+  }
 }
