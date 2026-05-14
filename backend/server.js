@@ -5,6 +5,8 @@ require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+
+// Switch back to simplex-noise
 const p5 = require('p5');
 
 const app = express();
@@ -40,13 +42,26 @@ async function autoUpdatePrice() {
 }
 
 
-let x = 0;
+// Switch back to simplex-noise (p5 is too large to reliablaly run on server and would need to run it to call functions like below)
+
+
+// Variables used for the noise stock
+let noisePriceArray = [];
+let noisePrice = 200;
+let time = 0;
+let timeScale = 0.05;
+let volatility = 10;
+
 function noiseStock() {
-    let
-
-
-
-
+    let n = p5.noise(time);
+    let change = volatility * (1 - (2 * n));
+    change += 0.1;
+    noisePrice += change;
+    if (noisePrice < 0) {
+        noisePrice = 0;
+    }
+    noisePriceArray.push(noisePrice);
+    time += timeScale;
     setTimeout(noiseStock, 5000);
 }
 
