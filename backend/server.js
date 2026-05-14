@@ -5,9 +5,7 @@ require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
-
-// Switch back to simplex-noise
-const p5 = require('p5');
+const { createNoise2D } = require('simplex-noise');
 
 const app = express();
 
@@ -41,27 +39,34 @@ async function autoUpdatePrice() {
     setTimeout(autoUpdatePrice, 10000);
 }
 
-
-// Switch back to simplex-noise (p5 is too large to reliablaly run on server and would need to run it to call functions like below)
-
-
 // Variables used for the noise stock
 let noisePriceArray = [];
 let noisePrice = 200;
 let time = 0;
 let timeScale = 0.05;
-let volatility = 10;
+let volatility = 5;
+const noise2D = createNoise2D();
 
+// Creates the prices based of the noise value and pushes it into a array then gets an updated price every 5 sec
 function noiseStock() {
-    let n = p5.noise(time);
-    let change = volatility * (1 - (2 * n));
+    let n = noise2D(time, 0);
+    let change = volatility * n;
     change += 0.1;
     noisePrice += change;
     if (noisePrice < 0) {
         noisePrice = 0;
     }
-    noisePriceArray.push(noisePrice);
+    noisePriceArray.push(noisePrice.toFixed(2));
     time += timeScale;
+    let value = stocks.get('NOIS');
+    value.price = noisePriceArray;
+
+    // Locks the priceArray to 200 items to prevent slowing down/crashing server
+    if (noisePriceArray.length > 200) {
+        noisePriceArray.shift();
+    }
+    
+    stocks.set('NOIS', value);
     setTimeout(noiseStock, 5000);
 }
 

@@ -16,14 +16,16 @@ async function setup() {
   createCanvas(windowWidth, windowHeight);
   currentTime = millis();
   await getStocks();
-  setupStocks();
 
+  const BUTTON_WIDTH = width/6;
+  const BUTTON_HEIGHT = height/10;
   buttons = [
-    {x: width/2, y: height*1/6, w: width/6, h: height/15},
-    {x: width/2, y: height*1/3, w: width/6, h: height/15},
-    {x: width/2, y: height*1/2, w: width/6, h: height/15},
-    {x: width/2, y: height*2/3, w: width/6, h: height/15},
-    {x: width/2, y: height*5/6, w: width/6, h: height/15}
+    {x: BUTTON_WIDTH/2, y: BUTTON_HEIGHT/2, w: BUTTON_WIDTH, h: BUTTON_HEIGHT},
+    {x: BUTTON_WIDTH/2, y: BUTTON_HEIGHT*1.5, w: BUTTON_WIDTH, h: BUTTON_HEIGHT},
+    {x: BUTTON_WIDTH/2, y: BUTTON_HEIGHT*2.5, w: BUTTON_WIDTH, h: BUTTON_HEIGHT},
+    {x: BUTTON_WIDTH/2, y: BUTTON_HEIGHT*3.5, w: BUTTON_WIDTH, h: BUTTON_HEIGHT},
+    {x: BUTTON_WIDTH/2, y: BUTTON_HEIGHT*4.5, w: BUTTON_WIDTH, h: BUTTON_HEIGHT},
+    {x: BUTTON_WIDTH/2, y: BUTTON_HEIGHT*5.5, w: BUTTON_WIDTH, h: BUTTON_HEIGHT}
   ];
   
   textAlign(CENTER, CENTER);
@@ -32,17 +34,13 @@ async function setup() {
 
 function draw() {
   background(220);
-  if (millis() > currentTime + 10000) {
+  if (millis() > currentTime + 5000) {
     currentTime = millis();
     getStocks();
-    setupStocks();
   }
-  // console.log(price);
-  // if (price !== undefined) {
-  //   text(price[2].price, width/2, height/2);
-  // }
 
-  if (clicked !== undefined) {
+  if (clicked !== undefined && clicked !== 'NOIS') {
+    createButtons();
     let tempPrice = stocks.get(clicked);
     text(`${clicked}\n${tempPrice.price}`, width/2, height/2);
   }
@@ -56,34 +54,39 @@ async function getStocks() {
     // Fetch from localhost for testing only. SWITCH TO "https://pine64.tailb67b61.ts.net" BEFORE HANDING IN/TESTING ON SERVER
     let stockPrices = await fetch('http://localhost:3000/prices');
     price = await stockPrices.json();
+
+    for (let [symbol, value] of Object.entries(price)) {
+      stocks.set(symbol, value);
+    }
   }
   catch(error) {
     console.log("something went wrong " + error);
   }
 } 
 
-function setupStocks() {
-  for (let [symbol, value] of Object.entries(price)) {
-    stocks.set(symbol, value);
-  }
-}
-
 function createButtons() {
   let index = 0;
   for (let [key, value] of stocks) {
     if (mouseIsInButton(buttons[index])) {
-      buttons[index].w = width/6 + 25;
-      buttons[index].h = height/15 + 25;
+      fill(100);
     }
     else {
-      buttons[index].w = width/6;
-      buttons[index].h = height/15;
+      fill(255);
     }
 
-    fill(255);
     rect(buttons[index].x, buttons[index].y, buttons[index].w, buttons[index].h);
     fill(0);
-    text(value.name, buttons[index].x, buttons[index].y);
+    if (key !== 'NOIS') {
+      text(`${value.name}\n${value.price}`, buttons[index].x, buttons[index].y);
+    }
+    else {
+      if (value.price.length === undefined) {
+        text(`${value.name}\nPrice Loading...`, buttons[index].x, buttons[index].y);
+      }
+      else {
+        text(`${value.name}\n${value.price[value.price.length - 1]}`, buttons[index].x, buttons[index].y);
+      }
+    }
 
     buttons[index].i = key;
     index ++;
