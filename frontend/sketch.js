@@ -39,7 +39,11 @@ function draw() {
     getStocks();
   }
 
-  if (clicked !== undefined && clicked !== 'NOIS') {
+  if (clicked === 'NOIS') {
+    createButtons();
+    noiseGraph();
+  }
+  else if (clicked !== undefined) {
     createButtons();
     let tempPrice = stocks.get(clicked);
     text(`${clicked}\n${tempPrice.price}`, width/2, height/2);
@@ -58,6 +62,7 @@ async function getStocks() {
     for (let [symbol, value] of Object.entries(price)) {
       stocks.set(symbol, value);
     }
+
   }
   catch(error) {
     console.log("something went wrong " + error);
@@ -93,6 +98,31 @@ function createButtons() {
   }
 }
 
+function noiseGraph() {
+  // Sets up the square where the graph will be
+  let w;
+  if (width > height) {
+    w = height/2;
+  }
+  else {
+    w = width/2;
+  }
+  fill(255);
+  rect(width/2, height/2, w, w);
+  // console.log(w/200);
+
+  let max;
+  let min;
+  let noise = stocks.get('NOIS');
+  if (noise.price !== undefined) {
+    for (let price of noise.price) {
+      price = parseFloat(price);
+      console.log(price);
+    }
+  }
+}
+
+// Returns a boolean based on if the mouse is in the given button or not
 function mouseIsInButton(btn) {
   return mouseX > btn.x - btn.w/2 &&
          mouseX < btn.x + btn.w/2 &&

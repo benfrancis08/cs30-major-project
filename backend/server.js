@@ -90,7 +90,7 @@ app.get('/prices', (req, res) => {
 //     }
 // });
 
-// Creates a server that listens for above endpoints and starts the autoUpdatePrice loop function
+// Creates a server that listens for above endpoints and starts the autoUpdatePrice and noiseStock loop functions
 app.listen(process.env.PORT, async () => {
     await autoUpdatePrice();
     noiseStock();
